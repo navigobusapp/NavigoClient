@@ -8,6 +8,7 @@ import { FontAwesome } from '@expo/vector-icons';
 const BookedTicket = () => {
   const navigation = useNavigation();
  const [modalVisible, setModalVisible] = useState(true);
+ 
   //const [modalVisible, setmodalVisible] = useState(false);
    
       const [open, setOpen] = useState(false);
@@ -27,7 +28,7 @@ const BookedTicket = () => {
 
         <Image
         style={{height:300,width:300,alignSelf:"center"}}
-        source={require('C:/Users/91755/checkbusnew/assets/qrcode.png')}
+        source={require('../assets/qrcode.png')}
       />
 
         

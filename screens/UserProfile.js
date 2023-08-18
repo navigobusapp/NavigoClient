@@ -4,6 +4,9 @@ import { useNavigation } from "@react-navigation/native";
 import MapView from 'react-native-maps';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { FontAwesome } from '@expo/vector-icons';
+import colors from '../colors';
+import { auth, database } from '../config/firebase'
+import { signOut } from 'firebase/auth';
 
 const UserProfile = () => {
   const navigation = useNavigation();
@@ -20,11 +23,142 @@ const UserProfile = () => {
        
       ]);
 
+      // const onSignOut = () => {
+      //   console.log("Hii")
+      //   signOut(auth).catch(error => console.log('Error logging out: ', error));
+      // };
+
+      const onSignOut = () => {
+        signOut(auth).catch(error => console.log('Error logging out: ', error));
+        //navigation.popToTop()
+    
+      };
+
     return (
       <View style={styles.container}>
 
-        <Text style={{fontSize:20,fontWeight:"bold"}}>UserProfile</Text>
+        <View style={{flexDirection:"row"}}>
+        <Text style={{fontSize:20,fontWeight:"bold",alignSelf:"center",marginLeft:"35%"}}>UserProfile</Text>
+        <TouchableOpacity onPress={onSignOut}>
+        <FontAwesome name="sign-out" size={25} color={colors.primary} style={{marginLeft:130}} />
+
+        </TouchableOpacity>
+        </View>
+
         <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth,marginTop:10}}/>
+
+        <View style={{flexDirection:"row",alignSelf:"center",margin:30}}>
+
+          <View>
+          <Image
+               source={require('../assets/profile.png')}
+                style={{width: 100, height: 100,borderRadius:100,borderWidth:2,borderColor:colors.primary}}
+            />
+          </View>
+
+          <View style={{justifyContent:"center",marginLeft:35,marginBottom:10}}>
+            <Text style={{fontSize:25,fontWeight:"bold",marginBottom:5}}>Prasanth Raj</Text>
+            <Text>+91 7305054082</Text>
+            <Text>samplemail@gmail.com</Text>
+          </View>
+        </View>
+
+        <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+
+        <Text style={{fontSize:20,fontWeight:"bold",alignSelf:"center",marginTop:20}}>Booking History</Text>
+
+
+        <View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
+
+          <View style={{margin:20}}>
+          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
+          <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
+          </View>
+
+          <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
+
+          </View>
+
+          <View style={{margin:18,alignSelf:"center",}}>
+          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
+          
+          </View>
+
+        </View>
+
+        <View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
+
+          <View style={{margin:20}}>
+          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Thiruvanmiyur</Text>
+          <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 07:30 AM</Text>
+          </View>
+
+          <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
+
+          </View>
+
+          <View style={{margin:18,alignSelf:"center",}}>
+          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>128</Text>
+          
+          </View>
+
+        </View>
+
+        <View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
+
+          <View style={{margin:20}}>
+          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
+          <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
+          </View>
+
+          <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
+
+          </View>
+
+          <View style={{margin:18,alignSelf:"center",}}>
+          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
+          
+          </View>
+
+        </View>
+
+        <View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
+
+          <View style={{margin:20}}>
+          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
+          <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
+          </View>
+
+          <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
+
+          </View>
+
+          <View style={{margin:18,alignSelf:"center",}}>
+          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
+          
+          </View>
+
+        </View>
+
+       
+
+        
+
+
+        {/* <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("BookedTicket")}>
+        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}>Booking History</Text>
+        </TouchableOpacity>
+
+
+        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Home")}>
+        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Settings</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button1} onPress={onSignOut}>
+        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Logout</Text>
+        </TouchableOpacity> */}
+
+        {/* <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth,marginTop:10}}/>
 
         <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("BookedTicket")}>
         <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Ticket Booked</Text>
@@ -45,7 +179,7 @@ const UserProfile = () => {
         <TouchableOpacity style={styles.button1} onPress={()=>navigation.navigate("Login")}>
   
         <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Logout</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         
         
@@ -64,7 +198,7 @@ const UserProfile = () => {
   button: {
     borderRadius: 10,
     padding: 10,
-    backgroundColor:"#84c8cd",
+    backgroundColor:colors.primary,
     marginTop:60
 
   },

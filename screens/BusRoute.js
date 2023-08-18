@@ -4,12 +4,14 @@ import { useNavigation } from "@react-navigation/native";
 import MapView from 'react-native-maps';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { FontAwesome } from '@expo/vector-icons';
+import colors from '../colors';
 import RadioGroup from 'react-native-radio-buttons-group';
 DropDownPicker.setListMode("MODAL")
 
 
-const BusRoute = () => {
+const BusRoute = ({route}) => {
   const navigation = useNavigation();
+  const{seat}=route.params;
  const [modalVisible, setModalVisible] = useState(true);
   //const [modalVisible, setmodalVisible] = useState(false);
    
@@ -48,6 +50,11 @@ const BusRoute = () => {
 
     const [selectedId, setSelectedId] = useState();
 
+    function bookseat(){
+      Alert.alert("Your Seat Booked Successfully");
+      navigation.navigate("Home");
+    }
+
     return (
       <View style={styles.container}>
 
@@ -55,7 +62,7 @@ const BusRoute = () => {
 
        <View style={{flexDirection:"row"}}>
 
-       <View style={{height:100,width:170,backgroundColor:"#F24C3D",margin:10,borderRadius:15}}>
+       <View style={{height:100,width:170,backgroundColor:colors.primary,margin:10,borderRadius:15}}>
 
         <View style={{alignSelf:"center",justifyContent:'center',alignItems:"center",marginTop:25}}>
         <Text style={{fontSize:22,color:"white",fontWeight:"bold"}}>Total Seats</Text>
@@ -63,10 +70,10 @@ const BusRoute = () => {
         </View>
 
       </View>
-    <View style={{height:100,width:170,backgroundColor:"#38E54D",margin:10,borderRadius:15}}>
+    <View style={{height:100,width:170,backgroundColor:colors.primary,margin:10,borderRadius:15}}>
     <View style={{alignSelf:"center",justifyContent:'center',alignItems:"center",marginTop:25}}>
         <Text style={{fontSize:22,color:"white",fontWeight:"bold"}}>Available Seats</Text>
-        <Text style={{fontSize:22,color:"white",fontWeight:"bold"}}>30</Text>
+        <Text style={{fontSize:22,color:"white",fontWeight:"bold"}}>{seat}</Text>
         </View>
 
       </View>
@@ -112,7 +119,7 @@ const BusRoute = () => {
 
        
        <View style={{marginTop:30,zIndex: 100}}>
-       <Text style={{fontSize:20,fontWeight:"bold",margin:20,alignSelf:"center"}}>Book your Seat</Text>
+       {/* <Text style={{fontSize:20,fontWeight:"bold",margin:20,alignSelf:"center"}}>Book your Seat</Text> */}
 
 
        <DropDownPicker
@@ -139,7 +146,7 @@ const BusRoute = () => {
         
 
 
-        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Home")}>
+        <TouchableOpacity style={styles.button} onPress={bookseat}>
         <View style={{height:50,width:150,backgroundColor:"red",borderRadius:10,marginTop:20,alignSelf:"center"}}>
           <Text style={{alignSelf:"center",marginTop:10,fontSize:18,fontWeight:"bold",color:"white"}}>Book Seat</Text>
         </View>

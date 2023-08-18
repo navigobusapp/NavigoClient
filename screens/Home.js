@@ -1,112 +1,115 @@
-import { View, TextInput, Modal, FlatList, TouchableOpacity, Text ,StyleSheet,Pressable,Dimensions,Button,Image} from 'react-native';
-import React, { useState,useRef} from "react";
+import { View, TextInput, Modal, FlatList, TouchableOpacity, Text ,StyleSheet,Pressable,Dimensions,Button,Image,ActivityIndicator} from 'react-native';
+import React, {  useEffect, useState, useLayoutEffect} from "react";
 import { useNavigation } from "@react-navigation/native";
 //import MapView, { Marker, Circle } from "react-native-maps";
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FontAwesome } from '@expo/vector-icons';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import {collection,orderBy,query,onSnapshot,} from "firebase/firestore";
+import { auth, database } from "../config/firebase";
+import * as Location from 'expo-location';
+import Buspoint from '../components/Buspoint';
 
 
 
 
 
+// function modalshow(){
 
-function modalshow(){
 
+//   <Modal
+//         animationType="slide"
+//         transparent={true}
+//         visible={modalVisible}
+//         onRequestClose={() => {
+//           Alert.alert('Modal has been closed.');
+//           setModalVisible(!modalVisible);
+//         }}>
+//         <View style={styles.centeredView}>
+//           <View style={styles.modalView}>
+//           <Text style={{fontWeight:"bold",fontSize:25,color:"black"}}>V-51 Kovilambakkam</Text>
 
-  <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-          <Text style={{fontWeight:"bold",fontSize:25,color:"black"}}>V-51 Kovilambakkam</Text>
+//           <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth,marginTop:10}}/>
 
-          <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth,marginTop:10}}/>
-
-          <View style={{marginTop:20,marginBottom:30}}>
-                <DropDownPicker
-            open={open}
-            value={value}
-            items={items}
-            setOpen={setOpen}
-            setValue={setValue}
-            setItems={setItems}
-            />
-          </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Book</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-}
+//           <View style={{marginTop:20,marginBottom:30}}>
+//                 <DropDownPicker
+//             open={open}
+//             value={value}
+//             items={items}
+//             setOpen={setOpen}
+//             setValue={setValue}
+//             setItems={setItems}
+//             />
+//           </View>
+//             <Pressable
+//               style={[styles.button, styles.buttonClose]}
+//               onPress={() => setModalVisible(!modalVisible)}>
+//               <Text style={styles.textStyle}>Book</Text>
+//             </Pressable>
+//           </View>
+//         </View>
+//       </Modal>
+// }
 
 const Home = () => {
   const navigation = useNavigation();
+  const [currloc,setcurrloc]=useState(
+    {
+      
+      latitude: 12.873048234353224,
+      longitude: 80.22608732422897,
+    
+    }
+  );
 
   
 
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState(
+    [{
+      busname: "Anakaputhur",
+      busno: "126",
+      drivername: "Vinoth",
+      lattitude: 12.879640406590227,
+      longitude: 80.2267600953335,
+    }]
+  );
+
+
   const [errorMsg, setErrorMsg] = useState(null);
+
+ 
   const [mapRegion, setMapRegion] = useState({
     latitude: 12.78032802250726,
     longitude: 80.22183998614041,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
 });
-  // const [friends] = useState([
-  //   {
-  //     username: "bob",
-  //     description: "school friend",
-  //     icon: "dog",
-  //     location: {
-    // latitude: "12.789174481216788"
-    //      longitude: "80.22144865609789",
-  //       
-  //     } , 
-  //   },
-  //   {
-  //     username: "Alex",
-  //     description: "Childhood friend",
-  //     icon: "dragon",
-  //     location: {
-        // longitude: "80.21798946473433",
-        // latitude: "12.780613259617077"
-  //     }, 
-  //   },
-  //   {
-  //     username: "Jack",
-  //     description: "Business Partner",
-  //     icon: "dove",
-  //     location: {
-  //       longitude: "80.21280866814878",
-  //       latitude: "12.770170476209536"
-  //     }, 
-  //   }
-  // ]);
 
+const collectionRef = collection(database, "BusLocations");
+useLayoutEffect(() => {
   
+  const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
+    setLocation(
+      querySnapshot.docs.map((doc) => ({
+        lattitude:doc.data().lattitude, 
+        longitude:doc.data().longitude,
+        busname:doc.id,
+        busno:doc.data().busno, 
+        drivername:doc.data().Drivername,
+        seatcount:doc.data().seatcount
 
-  
+      }))
+    )
+     
 
+    console.log(querySnapshot.size);
+  });
 
+  return unsubscribe;
+}, []);
 
-
-
-
-
-
-
-
-
+console.log(location);
 
 
 
@@ -144,6 +147,57 @@ const Home = () => {
         //set
       };
 
+      if (!location) {
+        return (
+          <View style={[styles.container1, styles.horizontal]}>
+            <ActivityIndicator size="large" color="#1C64D1" />
+       </View>
+        );
+      }
+
+      useEffect(() => {
+        // Function to request permission and get initial location
+        const getLocationAsync = async () => {
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            console.log('Permission to access location was denied');
+            return;
+          }
+    
+          // Get the initial location
+          const initialLocation = await Location.getCurrentPositionAsync({});
+          setcurrloc(initialLocation.coords);
+        };
+    
+        getLocationAsync();
+    
+        // Set up a subscription to receive location updates
+        const locationSubscription = Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.High,
+            timeInterval: 5000, // Update location every 5 seconds
+          },
+          (newLocation) => {
+            setcurrloc(newLocation.coords);
+          }
+        );
+    
+        // Clean up the subscription when the component is unmounted
+        return () => locationSubscription.remove();
+      }, []);
+
+console.log(currloc);
+
+
+
+    
+
+
+
+
+
+
+
     return (
       <View style={styles.container}>
         
@@ -151,7 +205,7 @@ const Home = () => {
 
         <MapView style={styles.map} 
         initialRegion={{
-          latitude: 12.873186369084287,longitude: 80.22656614206679,
+          latitude: currloc.latitude,longitude: currloc.longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
       }}
@@ -161,143 +215,39 @@ const Home = () => {
 
         <Marker
           pinColor='red'
-          coordinate={{ latitude: 12.78032802250726,longitude: 80.22183998614041,}} 
+          coordinate={{ latitude: currloc.latitude,longitude: currloc.longitude}} 
         >
          
 
-         <Callout style={{width:200,borderRadius:10}} onPress={()=>modalshow}>
+         <Callout style={{width:200,borderRadius:10}}>
             
             <View>
-            <Text style={{fontSize:18,fontWeight:"bold"}}>Mandaveli</Text>
-            <Text>Bus No: 127</Text>
-            <Text>Driver Name: Gowthan</Text>
+            <Text>My Location</Text>
             </View>
             
           </Callout>
 
         </Marker>
 
-        {/* latitude: 12.789174481216788,longitude: 80.22144865609789 */}
-        <Marker
-         
-          pinColor='red'
-          coordinate={{ latitude: 12.873186369084287,longitude: 80.22656614206679}}
-          style={{shadowColor: 'black',
-          shadowOpacity: 5,
-          shadowRadius: 5,}}
-          onCalloutPress={()=>navigation.navigate("BusRoute")}
 
+        {location?.map((value, key) => (
           
-          >
+          // onPress={()=>navigation.navigate('BusRoute',{place:value.name,time:value.time,price:value.price})}
+          // onPress={() => navigation.navigate("ContactInfo",{price:value.price,place:value.name})}
+          <TouchableOpacity
+            key={key}
+            onPress={{}}>
 
-            <View style={{width:70,height:70,borderRadius:60,backgroundColor:"red",opacity:0.25,justifyContent:"center",alignItems:"center",marginLeft:20}}>
-            <Image
-               source={require('C:/Users/91755/checkbusnew/assets/busicon.png')}
-             style={{width: 28, height: 30,opacity:10,borderWidth:2,borderColor:"red",borderRadius:60}}
-    //size={50}
-    />
-
-            </View>
-
-            <Callout style={{width:200,borderRadius:10}} onPress={()=>modalshow}>
-            
-              <View>
-              <Text style={{fontSize:18,fontWeight:"bold"}}>Mandaveli</Text>
-              <Text>Bus No: 127</Text>
-              <Text>Driver Name: Gowthan</Text>
-              </View>
-              
-            </Callout>
-
-  
-        </Marker>
-
-
-
-        <Marker
-          
-          pinColor='red'
-          coordinate={{ latitude: 12.871908345652267,longitude: 80.22663178362136}}
-          style={{shadowColor: 'black',
-          shadowOpacity: 5,
-          shadowRadius: 5,}}
-          onCalloutPress={()=>navigation.navigate("BusRoute")}
-
-          
-          >
-   
-
-        <View style={{width:70,height:70,borderRadius:60,backgroundColor:"red",opacity:0.25,justifyContent:"center",alignItems:"center",marginLeft:20}}>
-            <Image
-                source={require('C:/Users/91755/checkbusnew/assets/busicon.png')}
-                style={{width: 28, height: 30,opacity:10,borderWidth:2,borderColor:"red",borderRadius:60}}
-              //size={50}
-            />
-            </View>
-
-            <Callout style={{width:200,borderRadius:10}} onPress={()=>modalshow}>
-            
-              <View>
-              <Text style={{fontSize:18,fontWeight:"bold"}}>Thiruvanmiyur</Text>
-              <Text>Bus No: 57</Text>
-              <Text>Driver Name: P Senthil Kumar</Text>
-              </View>
-              
-            </Callout>
-            
-        </Marker>
-
-
-
-
-        <Marker
            
-          pinColor='red'
-          coordinate={{ latitude: 12.879640406590227,longitude: 80.2267600953335}}
-          style={{shadowColor: 'black',
-          shadowOpacity: 5,
-          shadowRadius: 5,}}
-          onCalloutPress={()=>navigation.navigate("BusRoute")}
-          >
-
-            <View style={{width:70,height:70,borderRadius:60,backgroundColor:"red",opacity:0.25,justifyContent:"center",alignItems:"center",marginLeft:20}}>
-            <Image
-          source={require('C:/Users/91755/checkbusnew/assets/busicon.png')}
-            style={{width: 28, height: 30,opacity:10,borderWidth:2,borderColor:"red",borderRadius:60}}
-          //size={50}
-          />
-            </View>
-
-            <Callout style={{width:200,borderRadius:10}} onPress={()=>modalshow}>
-            
-              <View>
-              <Text style={{fontSize:18,fontWeight:"bold"}}>Anakaputhur</Text>
-              <Text>Bus No: 126</Text>
-              <Text>Driver Name: Vinoth</Text>
-              </View>
-              
-            </Callout>
-        </Marker>
+            <Buspoint lat={value.lattitude} long={value.longitude} busname={value.busname} busno={value.busno} Drivername={value.drivername} seatscount={value.seatcount}/>
+          </TouchableOpacity>
+        ))}
+        {/* <Buspoint lat={12.789174481216788} long={80.22144865609789} busname={"Mandaveli"} busno={"99"} Drivername={"Chandru"}/> */}
+ 
 
 
       </MapView>
-  {/* <Modal visible={dropdownVisible} animationType="slide">
-        <View >
-        <Text style={{fontSize:18,fontWeight:"bold",textAlign:"center",marginTop:10}}>Search List</Text>
-          <FlatList
-            data={data}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={{margin:15,backgroundColor:"#e9e7e7",height:70,borderRadius:10,padding:10}}>
-                <TouchableOpacity onPress={() => handleSelectOption(item)}>
-                <Text style={{fontSize:18}}>{item.name}</Text>
-              </TouchableOpacity>
 
-              </View>
-            )}
-          />
-        </View>
-      </Modal> */}
 
 
 
@@ -317,7 +267,6 @@ const Home = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      
     },
     map: {
       flex: 1,
@@ -327,8 +276,6 @@ const Home = () => {
       bottom: 0,
       left: 0,
       right: 0,
-      // width:'100%',
-      // height: '100%'
     },
     input: {
          //position:"relative",
@@ -345,8 +292,6 @@ const Home = () => {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-  
-        //marginTop: ,
       },
       mapOverlay: {
         position: "absolute",
@@ -429,45 +374,48 @@ const Home = () => {
         marginTop: -0.5,
         // marginBottom: -15
       },
+      container1: {
+        flex: 1,
+        justifyContent: "center"
+      },
+      horizontal: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        padding: 10
+      }
 
 
 
-      // container: {
-      //   backgroundColor: "#fff",
-        
-      // },
-      // mapView: {
-      //   position: "absolute",
-      //   top: 0,
-      //   bottom: 0,
-      //   left: 0,
-      //   right: 0,
-        
-      // },
-      // circle: {
-      //   width: 26,
-      //   height: 26,
-      //   borderRadius: 50
-      // },
-      // stroke: {
-      //   backgroundColor: "#ffffff",
-      //   borderRadius: 50,
-      //   width: "100%",
-      //   height: "100%",
-      //   zIndex: 1
-      // },
-      // core: {
-      //   backgroundColor: "red",
-      //   width: 24,
-      //   position: "absolute",
-      //   top: 1,
-      //   left: 1,
-      //   right: 1,
-      //   bottom: 1,
-      //   height: 24,
-      //   borderRadius: 50,
-      //   zIndex: 2
-      // }
+    
   });
 
   export default Home;
+
+  // <Marker
+           
+  //         pinColor='red'
+  //         coordinate={{ latitude: 12.879640406590227,longitude: 80.2267600953335}}
+  //         style={{shadowColor: 'black',
+  //         shadowOpacity: 5,
+  //         shadowRadius: 5,}}
+  //         onCalloutPress={()=>navigation.navigate("BusRoute")}
+  //         >
+
+  //           <View style={{width:70,height:70,borderRadius:60,backgroundColor:"red",opacity:0.25,justifyContent:"center",alignItems:"center",marginLeft:20}}>
+  //           <Image
+  //         source={require('C:/Users/91755/checkbusnew/assets/busicon.png')}
+  //           style={{width: 28, height: 30,opacity:10,borderWidth:2,borderColor:"red",borderRadius:60}}
+  //         //size={50}
+  //         />
+  //           </View>
+
+  //           <Callout style={{width:200,borderRadius:10}} onPress={()=>modalshow}>
+            
+  //             <View>
+  //             <Text style={{fontSize:18,fontWeight:"bold"}}>Anakaputhur</Text>
+  //             <Text>Bus No: 126</Text>
+  //             <Text>Driver Name: Vinoth</Text>
+  //             </View>
+              
+  //           </Callout>
+  //       </Marker>

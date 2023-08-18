@@ -1,17 +1,47 @@
-import { StyleSheet, Text, TextInput, View ,TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TextInput, View ,TouchableOpacity,Image ,Alert} from 'react-native';
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth,database} from '../config/firebase';
+import colors from '../colors';
+import {collection,addDoc,orderBy,query,onSnapshot,setDoc,doc} from 'firebase/firestore';
 
 function Signup(){
 
 
     const navigation = useNavigation();
+    const [name,setName]=useState("");
+    const [number,setnumber]=useState("");
     const [email, setEmail] = useState("");
-    const [password, setpassword] = useState("");
+    const [password, setPassword] = useState("");
+
+    //const userCollectionRef = collection(database,'Users',email.split()[0]) 
+    
+
+    const onHandleSignup = () => {
+        if (email !== '' && password !== '') {
+
+            setDoc(doc(database, "Users", email.split("@")[0]), {
+                name: name,
+                email:email, 
+                mobile:number
+              });
+
+      createUserWithEmailAndPassword(auth, email, password)
+      
+
+            .then(() => console.log('Signup success'))
+            .catch((err) => Alert.alert("Login error", err.message));
+        }
+      };
+
     return(
         <View style={styles.container}>
             <View style={styles.container1}>
-                <Text style={styles.heading}>Check Bus</Text>
+            <Image
+                source={require('../assets/logo.png')}
+                style={{width: 300, height: 200,alignSelf:"center"}}
+            />
             </View>
 
             {/* <View style={styles.container2}>
@@ -24,6 +54,17 @@ function Signup(){
             <View style={styles.container3}>
             <View style={{marginTop:50}}>
             <Text style={{fontWeight:"bold",fontSize:30,textAlign:"center",color:"white"}}>Signup</Text>
+
+            <TextInput
+            style={styles.input}
+            placeholder="Enter your Name"
+           
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoFocus={true}
+            value={name}
+            onChangeText={(text) => setName(text)}
+            />
             <TextInput
             style={styles.input}
             placeholder="Enter email"
@@ -33,6 +74,16 @@ function Signup(){
             autoFocus={true}
             value={email}
             onChangeText={(text) => setEmail(text)}
+            />
+            <TextInput
+            style={styles.input}
+            placeholder="Enter Mobile Number"
+            autoCapitalize="none"
+            keyboardType="phone-pad"
+            //textContentType="number"
+            autoFocus={true}
+            value={number}
+            onChangeText={(text) => setnumber(text)}
             />
 
         <TextInput
@@ -44,15 +95,15 @@ function Signup(){
             autoCorrect={false}
             autoFocus={true}
             value={password}
-            onChangeText={(text) => setpassword(text)}
+            onChangeText={(text) => setPassword(text)}
         />
 
             {/* <View style={{height:50,width:130,backgroundColor:"red",borderRadius:10,alignSelf:"center",marginTop:40}}>
                    <Text style={{textAlign:"center",marginTop:12,fontWeight:"bold",color:"white"}}>Submit</Text>
             </View> */}
 
-        <TouchableOpacity style={styles.button}>
-        <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}> Log In</Text>
+        <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
+        <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}>Sign Up</Text>
       </TouchableOpacity>
 
             <View style={{marginTop: 20, flexDirection: 'row', alignItems: 'center', alignSelf: 'center'}}>
@@ -72,7 +123,7 @@ export default Signup;
 const styles = StyleSheet.create({
     container: {
        flex:1, 
-      backgroundColor:"#E96479",
+      backgroundColor:colors.primary,
 
     },
     container2:{
@@ -80,7 +131,7 @@ const styles = StyleSheet.create({
         //backgroundColor:"blue",
     },
     container1: {
-        marginTop:100,
+        marginTop:60,
         height:100,
         //backgroundColor:"yellow"
      },
@@ -107,14 +158,14 @@ const styles = StyleSheet.create({
      input: {
         backgroundColor: "#F6F7FB",
         height: 50,
-        marginTop: 30,
-        marginBottom:20,
+        marginTop: 20,
+        marginBottom:15,
         fontSize: 16,
         borderRadius: 10,
         padding: 12,
       },
       button: {
-        backgroundColor: 'red',
+        backgroundColor:"red",
         height: 58,
         borderRadius: 10,
         justifyContent: 'center',

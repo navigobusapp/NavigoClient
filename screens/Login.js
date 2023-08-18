@@ -1,17 +1,34 @@
-import { StyleSheet, Text, TextInput, View ,TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TextInput, View ,TouchableOpacity,Image,Alert } from 'react-native';
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import colors from '../colors';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../config/firebase";
 
 
 function Login(){
 
-    const [email, setEmail] = useState("");
-    const [password, setpassword] = useState("");
+    
     const navigation = useNavigation();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+  const onHandleLogin = () => {
+    if (email !== "" && password !== "") {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => console.log("Login success"))
+        .catch((err) => Alert.alert("Login error", err.message));
+    }
+  };
     return(
         <View style={styles.container}>
             <View style={styles.container1}>
-                <Text style={styles.heading}>Check Bus</Text>
+                
+            <Image
+               source={require('../assets/logo.png')}
+                style={{width: 300, height: 200,alignSelf:"center"}}
+            />
             </View>
 
             {/* <View style={styles.container2}>
@@ -44,14 +61,14 @@ function Login(){
             autoCorrect={false}
             autoFocus={true}
             value={password}
-            onChangeText={(text) => setpassword(text)}
+            onChangeText={(text) => setPassword(text)}
         />
 
             {/* <View style={{height:50,width:130,backgroundColor:"red",borderRadius:10,alignSelf:"center",marginTop:40}}>
                    <Text style={{textAlign:"center",marginTop:12,fontWeight:"bold",color:"white"}}>Submit</Text>
             </View> */}
 
-        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Home")}>
+        <TouchableOpacity style={styles.button} onPress={onHandleLogin}>
         <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}> Log In</Text>
       </TouchableOpacity>
 
@@ -72,7 +89,7 @@ export default Login;
 const styles = StyleSheet.create({
     container: {
        flex:1, 
-      backgroundColor:"#E96479",
+      backgroundColor:colors.primary,
 
     },
     container2:{
@@ -85,7 +102,7 @@ const styles = StyleSheet.create({
         //backgroundColor:"yellow"
      },
      container3: {
-        marginTop:10,
+        marginTop:40,
         height:500,
         width:"90%",
         alignSelf:"center",
