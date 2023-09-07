@@ -15,6 +15,8 @@ import Buspoint from '../components/Buspoint';
 
 
 
+
+
 // function modalshow(){
 
 
@@ -62,6 +64,18 @@ const Home = () => {
     
     }
   );
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate a 5-second loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    // Clear the timer when the component unmounts
+    return () => clearTimeout(timer);
+  }, []);
 
   
 
@@ -186,24 +200,23 @@ console.log(location);
         return () => locationSubscription.remove();
       }, []);
 
-console.log(currloc);
-
-
-
-    
-
-
-
-
 
 
 
     return (
       <View style={styles.container}>
-        
-            <Text style={{position:"absolute",top:40}}>Srihari</Text>
 
-        <MapView style={styles.map} 
+        {isLoading ? 
+        
+        <View style={styles.container}>
+      <ActivityIndicator size="large" />
+      </View>
+        
+        : 
+        
+       
+
+    <MapView style={styles.map} 
         initialRegion={{
           latitude: currloc.latitude,longitude: currloc.longitude,
             latitudeDelta: 0.0922,
@@ -250,15 +263,47 @@ console.log(currloc);
 
 
 
+       
+
+  
 
 
+
+        
+        
+        }  
+
+        {isLoading ? 
+        
+        
+
+      <View>
+      <ActivityIndicator size="large"/>
+      </View>
+        :
+
+        <View>
         <TextInput
-            style={styles.input}
-            placeholder="Search Bus"
-            value={searchQuery}
-            onChangeText={handleSearchQueryChange}
-            onFocus={() => setDropdownVisible(true)}
-            />
+      style={styles.input}
+      placeholder="Search Bus"
+      value={searchQuery}
+      onChangeText={handleSearchQueryChange}
+      onFocus={() => setDropdownVisible(true)}
+      /> 
+      </View> 
+        
+        
+        }
+        
+        
+            {/* <Text style={{position:"absolute",top:40}}>Srihari</Text> */}
+
+            
+
+
+
+
+        
           
       </View>
     );

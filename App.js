@@ -15,6 +15,7 @@ import UserProfile from "./screens/UserProfile"
 import BookedTicket from "./screens/BookedTicket";
 import BusRoute from "./screens/BusRoute";
 import colors from "./colors";
+import ConcessionPage from "./screens/ConcessionPage";
 
 
 
@@ -53,6 +54,7 @@ function ChatStack() {
 
 <Tab.Screen name="BookedTicket" component={BookedTicket} options={{ tabBarVisible: false,tabBarButton: (props) => null,tabBarStyle: { display: "none" }}} />
 <Tab.Screen name="BusRoute" component={BusRoute} options={{ tabBarVisible: false,tabBarButton: (props) => null,tabBarStyle: { display: "none" }}} />
+<Tab.Screen name="ConcessionPage" component={ConcessionPage} options={{ tabBarVisible: false,tabBarButton: (props) => null,tabBarStyle: { display: "none" }}} />
     </Tab.Navigator>
   );
 }
@@ -77,6 +79,7 @@ function AuthStack() {
     }>
       <Tab.Screen name="Login" component={Login} options={{ tabBarVisible: false,tabBarButton: (props) => null,tabBarStyle: { display: "none" },}} />
       <Tab.Screen name="Signup" component={Signup} options={{ tabBarVisible: false,tabBarButton: (props) => null,tabBarStyle: { display: "none" }}} />
+      
       {/* <Tab.Screen name="Home" component={Home}  options={{ tabBarIcon:({size,color})=>(
             <FontAwesome name="home" size={25} color={colors.primary} />
           ),}} />

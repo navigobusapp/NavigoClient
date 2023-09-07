@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import MapView from 'react-native-maps';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { getAuth} from "firebase/auth";
 import { FontAwesome } from '@expo/vector-icons';
 import colors from '../colors';
 import { auth, database } from '../config/firebase'
@@ -57,13 +58,25 @@ const UserProfile = () => {
           </View>
 
           <View style={{justifyContent:"center",marginLeft:35,marginBottom:10}}>
-            <Text style={{fontSize:25,fontWeight:"bold",marginBottom:5}}>Prasanth Raj</Text>
-            <Text>+91 7305054082</Text>
-            <Text>samplemail@gmail.com</Text>
+            <Text style={{fontSize:25,fontWeight:"bold",marginBottom:5}}>UserName</Text>
+            <Text>+91 7550005350</Text>
+            <Text>{getAuth().currentUser.email}</Text>
           </View>
         </View>
 
+
+        
+
         <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth}}/>
+
+        <TouchableOpacity onPress={()=>navigation.navigate('ConcessionPage')}>
+        <View style={{height:50,justifyContent:"space-between",padding:12,flexDirection:"row",margin:10}}>
+        <Text style={{fontSize:20}}>Concession Form</Text>
+        <FontAwesome name="arrow-circle-o-right" size={25} color={colors.primary} style={{marginLeft:130}} />
+
+
+        </View>
+        </TouchableOpacity>
 
         <Text style={{fontSize:20,fontWeight:"bold",alignSelf:"center",marginTop:20}}>Booking History</Text>
 
