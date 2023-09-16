@@ -1,5 +1,5 @@
 import { View, TextInput, Modal, FlatList, TouchableOpacity, Text ,StyleSheet,Pressable,Alert,Image} from 'react-native';
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import MapView from 'react-native-maps';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -8,8 +8,14 @@ import { FontAwesome } from '@expo/vector-icons';
 import colors from '../colors';
 import { auth, database } from '../config/firebase'
 import { signOut } from 'firebase/auth';
-
+import {collection,addDoc,orderBy,query,onSnapshot,setDoc,doc,getDoc,where, updateDoc} from 'firebase/firestore';
+import * as Location from 'expo-location';
 const UserProfile = () => {
+
+  const [location, setLocation] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+
   const navigation = useNavigation();
  const [modalVisible, setModalVisible] = useState(true);
   //const [modalVisible, setmodalVisible] = useState(false);
@@ -17,23 +23,61 @@ const UserProfile = () => {
       const [open, setOpen] = useState(false);
       const [value, setValue] = useState(null);
       const [items, setItems] = useState([
-        {label: 'UTI bank', value: 'UTI bank'},
-        {label: 'Sadharsivam Nagar', value: 'Sadharsivam Nagar'},
-        {label: 'Kaiveli', value: 'Kaiveli'},
-        {label: 'Ram Nagar', value: 'Ram Nagar'}
+        {label: '126', value: '126'},
+        {label: '127', value: '127'},
+        {label: '57', value: '57'},
        
       ]);
 
-      // const onSignOut = () => {
-      //   console.log("Hii")
-      //   signOut(auth).catch(error => console.log('Error logging out: ', error));
-      // };
-
-      const onSignOut = () => {
+const onSignOut = () => {
         signOut(auth).catch(error => console.log('Error logging out: ', error));
         //navigation.popToTop()
+  };
+
+  const currentmail=getAuth()?.currentUser.email;
+console.log(currentmail);
+
+  const collectionRef = collection(database, "Users");
+  const [details,setDetails]=useState();
+
+  useEffect(() => {
+    const collectionRef = collection(database, 'Users');
+      const q = query(collectionRef, where("email", "==", currentmail));
+      const unsubscribe = onSnapshot(q, querySnapshot => {
+        setDetails(
+          querySnapshot.docs.map(doc => 
+            (
+            {
+            mail:doc.data().email,
+            phone: doc.data().mobile,
+            name:doc.data().name,
+            type:doc.data().type
+          }))
+        );
+      });        
     
-      };
+    return unsubscribe;
+    }, 
+    
+    []);
+
+//console.log(details);
+
+function updateLocation(){
+  console.log('Hii');
+  updateDoc(doc(database, "Users", currentmail.split('@')[0]), {
+    busno:value
+  })
+
+}
+console.log(value,'--<');
+
+
+
+
+    
+
+
 
     return (
       <View style={styles.container}>
@@ -69,7 +113,31 @@ const UserProfile = () => {
 
         <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth}}/>
 
-        <TouchableOpacity onPress={()=>navigation.navigate('ConcessionPage')}>
+        <Text style={{fontSize:20,fontWeight:"bold",margin:10}}>Choose your Bus Id</Text>
+
+        <DropDownPicker
+            listMode="SCROLLVIEW"
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems} 
+            style={{marginBottom:20}}
+            dropDownDirection="TOP"
+            dropDownMaxHeight={500}
+            />    
+
+    <TouchableOpacity style={styles.button} onPress={updateLocation}>
+        <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}>Confirm</Text>
+      </TouchableOpacity>
+
+       
+
+        { false &&
+          <View>
+
+      <TouchableOpacity onPress={()=>navigation.navigate('ConcessionPage')}>
         <View style={{height:50,justifyContent:"space-between",padding:12,flexDirection:"row",margin:10}}>
         <Text style={{fontSize:20}}>Concession Form</Text>
         <FontAwesome name="arrow-circle-o-right" size={25} color={colors.primary} style={{marginLeft:130}} />
@@ -77,122 +145,92 @@ const UserProfile = () => {
 
         </View>
         </TouchableOpacity>
+            <Text style={{fontSize:20,fontWeight:"bold",alignSelf:"center",marginTop:20}}>Booking History</Text>
 
-        <Text style={{fontSize:20,fontWeight:"bold",alignSelf:"center",marginTop:20}}>Booking History</Text>
 
+<View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
 
-        <View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
+  <View style={{margin:20}}>
+  <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
+  <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
+  </View>
 
-          <View style={{margin:20}}>
-          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
-          <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
+  <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
+
+  </View>
+
+  <View style={{margin:18,alignSelf:"center",}}>
+  <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
+  
+  </View>
+
+</View>
+
+<View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
+
+  <View style={{margin:20}}>
+  <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Thiruvanmiyur</Text>
+  <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 07:30 AM</Text>
+  </View>
+
+  <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
+
+  </View>
+
+  <View style={{margin:18,alignSelf:"center",}}>
+  <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>128</Text>
+  
+  </View>
+
+</View>
+
+<View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
+
+  <View style={{margin:20}}>
+  <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
+  <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
+  </View>
+
+  <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
+
+  </View>
+
+  <View style={{margin:18,alignSelf:"center",}}>
+  <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
+  
+  </View>
+
+</View>
+
+<View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
+
+  <View style={{margin:20}}>
+  <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
+  <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
+  </View>
+
+  <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
+
+  </View>
+
+  <View style={{margin:18,alignSelf:"center",}}>
+  <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
+  
+  </View>
+
+</View>
           </View>
+        }
 
-          <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
 
-          </View>
-
-          <View style={{margin:18,alignSelf:"center",}}>
-          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
-          
-          </View>
-
-        </View>
-
-        <View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
-
-          <View style={{margin:20}}>
-          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Thiruvanmiyur</Text>
-          <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 07:30 AM</Text>
-          </View>
-
-          <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
-
-          </View>
-
-          <View style={{margin:18,alignSelf:"center",}}>
-          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>128</Text>
-          
-          </View>
-
-        </View>
-
-        <View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
-
-          <View style={{margin:20}}>
-          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
-          <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
-          </View>
-
-          <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
-
-          </View>
-
-          <View style={{margin:18,alignSelf:"center",}}>
-          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
-          
-          </View>
-
-        </View>
-
-        <View style={{height:100,backgroundColor:colors.primary,marginTop:20,borderRadius:10,elevation:4,flexDirection:"row",justifyContent:"space-around"}}>
-
-          <View style={{margin:20}}>
-          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>Mandaveli</Text>
-          <Text style={{fontWeight:'400',color:'white'}}>Booked Time: 08:00 AM</Text>
-          </View>
-
-          <View style={{height:"70%",width:1,backgroundColor:"white",alignSelf:"center"}}>
-
-          </View>
-
-          <View style={{margin:18,alignSelf:"center",}}>
-          <Text style={{fontSize:30,fontWeight:"bold",color:"white"}}>102</Text>
-          
-          </View>
-
-        </View>
+        
 
        
 
         
 
 
-        {/* <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("BookedTicket")}>
-        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}>Booking History</Text>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Home")}>
-        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Settings</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button1} onPress={onSignOut}>
-        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Logout</Text>
-        </TouchableOpacity> */}
-
-        {/* <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth,marginTop:10}}/>
-
-        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("BookedTicket")}>
-        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Ticket Booked</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Home")}>
-        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Booking History</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Home")}>
-        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Link Account</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Home")}>
-        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Settings</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button1} onPress={()=>navigation.navigate("Login")}>
-  
-        <Text style={{fontWeight: 'bold', color: 'white', fontSize: 18,textAlign:"center"}}> Logout</Text>
-        </TouchableOpacity> */}
+        
 
         
         
@@ -212,7 +250,7 @@ const UserProfile = () => {
     borderRadius: 10,
     padding: 10,
     backgroundColor:colors.primary,
-    marginTop:60
+    marginTop:20
 
   },
 

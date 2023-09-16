@@ -1,10 +1,12 @@
-import { StyleSheet, Text, TextInput, View ,TouchableOpacity,Image ,Alert} from 'react-native';
-import React, { useState } from "react";
+import { StyleSheet, Text, TextInput, View ,TouchableOpacity,Image ,Alert,} from 'react-native';
+import React, { useState,useMemo } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth,database} from '../config/firebase';
 import colors from '../colors';
-import {collection,addDoc,orderBy,query,onSnapshot,setDoc,doc} from 'firebase/firestore';
+import {collection,addDoc,orderBy,query,onSnapshot,setDoc,doc,getDoc} from 'firebase/firestore';
+import RadioGroup from 'react-native-radio-buttons-group';
+
 
 function Signup(){
 
@@ -16,6 +18,21 @@ function Signup(){
     const [password, setPassword] = useState("");
 
     //const userCollectionRef = collection(database,'Users',email.split()[0]) 
+
+    const radioButtons = useMemo(() => ([
+        {
+            id: true, // acts as primary key, should be unique and non-empty string
+            label: 'Bus Conductor',
+            value: 'Bus Conductor'
+        },
+        {
+            id: false,
+            label: 'Passenger',
+            value: 'Passenger'
+        },
+    ]), []);
+
+    const [selectedId, setSelectedId] = useState();
     
 
     const onHandleSignup = () => {
@@ -24,7 +41,11 @@ function Signup(){
             setDoc(doc(database, "Users", email.split("@")[0]), {
                 name: name,
                 email:email, 
-                mobile:number
+                mobile:number,
+                type: selectedId
+            
+            
+            
               });
 
       createUserWithEmailAndPassword(auth, email, password)
@@ -34,6 +55,9 @@ function Signup(){
             .catch((err) => Alert.alert("Login error", err.message));
         }
       };
+
+      console.log('Hiiii');
+
 
     return(
         <View style={styles.container}>
@@ -75,6 +99,15 @@ function Signup(){
             value={email}
             onChangeText={(text) => setEmail(text)}
             />
+
+            <RadioGroup 
+            radioButtons={radioButtons} 
+            onPress={setSelectedId}
+            selectedId={selectedId}
+            layout='row'
+            containerStyle={{color:'white'}}
+            
+            />     
             <TextInput
             style={styles.input}
             placeholder="Enter Mobile Number"
@@ -172,4 +205,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 40,
       },
+      
   });

@@ -6,55 +6,21 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FontAwesome } from '@expo/vector-icons';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import {collection,orderBy,query,onSnapshot,} from "firebase/firestore";
 import { auth, database } from "../config/firebase";
 import * as Location from 'expo-location';
 import Buspoint from '../components/Buspoint';
+import { getAuth} from "firebase/auth";
+import {collection,addDoc,orderBy,query,onSnapshot,setDoc,doc,getDoc,where, updateDoc} from 'firebase/firestore';
 
 
 
 
 
 
-
-// function modalshow(){
-
-
-//   <Modal
-//         animationType="slide"
-//         transparent={true}
-//         visible={modalVisible}
-//         onRequestClose={() => {
-//           Alert.alert('Modal has been closed.');
-//           setModalVisible(!modalVisible);
-//         }}>
-//         <View style={styles.centeredView}>
-//           <View style={styles.modalView}>
-//           <Text style={{fontWeight:"bold",fontSize:25,color:"black"}}>V-51 Kovilambakkam</Text>
-
-//           <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth,marginTop:10}}/>
-
-//           <View style={{marginTop:20,marginBottom:30}}>
-//                 <DropDownPicker
-//             open={open}
-//             value={value}
-//             items={items}
-//             setOpen={setOpen}
-//             setValue={setValue}
-//             setItems={setItems}
-//             />
-//           </View>
-//             <Pressable
-//               style={[styles.button, styles.buttonClose]}
-//               onPress={() => setModalVisible(!modalVisible)}>
-//               <Text style={styles.textStyle}>Book</Text>
-//             </Pressable>
-//           </View>
-//         </View>
-//       </Modal>
-// }
 
 const Home = () => {
+
+  const currentmail=getAuth()?.currentUser.email;
   const navigation = useNavigation();
   const [currloc,setcurrloc]=useState(
     {
@@ -112,18 +78,72 @@ useLayoutEffect(() => {
         busno:doc.data().busno, 
         drivername:doc.data().Drivername,
         seatcount:doc.data().seatcount
-
+      
       }))
     )
-     
 
+    
+    console.log(querySnapshot.size);
+  });
+  return unsubscribe;
+  
+}, []);
+
+
+const [busno,setBusno]=useState();
+const [type,setType]=useState();
+
+useLayoutEffect(() => {
+  const collectionRef1 = collection(database, "Users");
+  const q = query(collectionRef1, where("email", "==", currentmail));
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+   
+      const s= querySnapshot.docs.map((doc) => ({
+        busno:doc.data().busno,
+        type:doc.data().type
+      }))
+      setBusno(s[0].busno);
+      setType(s[0].type);
+    
     console.log(querySnapshot.size);
   });
 
   return unsubscribe;
 }, []);
 
-console.log(location);
+console.log(busno,type,"--<");
+
+
+
+  
+  useLayoutEffect(() => {
+    if(type){
+    const collectionRef2 = collection(database, "BusLocations");
+    const q2= query(collectionRef2, where("busno", "==", '57'));
+    const unsubscribe = onSnapshot(q2, (querySnapshot) => {
+
+      const s= querySnapshot.docs.map((doc1) => (
+        
+        updateDoc(doc(database, "BusLocations", doc1.id), {
+          lattitude:currloc.latitude, 
+          longitude:currloc.longitude
+        })
+      ))
+     
+      
+      console.log(querySnapshot.size);
+    });
+  }
+
+    
+  }, []);
+  
+
+ 
+
+
+
+//console.log(location);
 
 
 
@@ -142,7 +162,7 @@ console.log(location);
        
       ]);
 
-
+   // console.log("Hii");
     const [searchQuery, setSearchQuery] = useState('');
     const [dropdownVisible, setDropdownVisible] = useState(true);
     const [data, setData] = useState([
@@ -169,6 +189,8 @@ console.log(location);
         );
       }
 
+      //const [locationSubscription, setLocationSubscription] = useState(null);
+
       useEffect(() => {
         // Function to request permission and get initial location
         const getLocationAsync = async () => {
@@ -186,7 +208,7 @@ console.log(location);
         getLocationAsync();
     
         // Set up a subscription to receive location updates
-        const locationSubscription = Location.watchPositionAsync(
+        const subscription = Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.High,
             timeInterval: 5000, // Update location every 5 seconds
@@ -196,11 +218,19 @@ console.log(location);
           }
         );
     
+        // Store the subscription in state
+        //setLocationSubscription(subscription);
+    
         // Clean up the subscription when the component is unmounted
-        return () => locationSubscription.remove();
+        
       }, []);
 
+      //console.log(currloc);
+      
 
+
+     
+     
 
 
     return (
