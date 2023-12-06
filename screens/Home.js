@@ -30,7 +30,7 @@ const Home = () => {
     
     }
   );
-
+console.log(currloc.latitude);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -56,17 +56,18 @@ const Home = () => {
   );
 
 
-  const [errorMsg, setErrorMsg] = useState(null);
+//   const [errorMsg, setErrorMsg] = useState(null);
 
  
-  const [mapRegion, setMapRegion] = useState({
-    latitude: 12.78032802250726,
-    longitude: 80.22183998614041,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-});
+//   const [mapRegion, setMapRegion] = useState({
+//     latitude: 12.78032802250726,
+//     longitude: 80.22183998614041,
+//     latitudeDelta: 0.0922,
+//     longitudeDelta: 0.0421,
+// });
 
 const collectionRef = collection(database, "BusLocations");
+
 useLayoutEffect(() => {
   
   const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
@@ -74,8 +75,8 @@ useLayoutEffect(() => {
       querySnapshot.docs.map((doc) => ({
         lattitude:doc.data().lattitude, 
         longitude:doc.data().longitude,
-        busname:doc.id,
-        busno:doc.data().busno, 
+        busname:doc.data().route,
+        busno:doc.id, 
         drivername:doc.data().Drivername,
         seatcount:doc.data().seatcount
       
@@ -90,53 +91,31 @@ useLayoutEffect(() => {
 }, []);
 
 
-const [busno,setBusno]=useState();
-const [type,setType]=useState();
+// const [busno,setBusno]=useState();
+// const [type,setType]=useState();
 
-useLayoutEffect(() => {
-  const collectionRef1 = collection(database, "Users");
-  const q = query(collectionRef1, where("email", "==", currentmail));
-  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+// useLayoutEffect(() => {
+//   const collectionRef1 = collection(database, "Users");
+//   const q = query(collectionRef1, where("email", "==", currentmail));
+//   const unsubscribe = onSnapshot(q, (querySnapshot) => {
    
-      const s= querySnapshot.docs.map((doc) => ({
-        busno:doc.data().busno,
-        type:doc.data().type
-      }))
-      setBusno(s[0].busno);
-      setType(s[0].type);
+//       const s= querySnapshot.docs.map((doc) => ({
+//         busno:doc.data().busno,
+//         type:doc.data().type
+//       }))
+//       setBusno(s[0].busno);
+//       setType(s[0].type);
     
-    console.log(querySnapshot.size);
-  });
+//     console.log(querySnapshot.size);
+//   });
 
-  return unsubscribe;
-}, []);
-
-console.log(busno,type,"--<");
+//   return unsubscribe;
+// }, []);
+// console.log(busno,type,"--<");
 
 
 
   
-  useLayoutEffect(() => {
-    if(type){
-    const collectionRef2 = collection(database, "BusLocations");
-    const q2= query(collectionRef2, where("busno", "==", '57'));
-    const unsubscribe = onSnapshot(q2, (querySnapshot) => {
-
-      const s= querySnapshot.docs.map((doc1) => (
-        
-        updateDoc(doc(database, "BusLocations", doc1.id), {
-          lattitude:currloc.latitude, 
-          longitude:currloc.longitude
-        })
-      ))
-     
-      
-      console.log(querySnapshot.size);
-    });
-  }
-
-    
-  }, []);
   
 
  

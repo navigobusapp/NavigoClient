@@ -10,7 +10,10 @@ import { auth, database } from '../config/firebase'
 import { signOut } from 'firebase/auth';
 import {collection,addDoc,orderBy,query,onSnapshot,setDoc,doc,getDoc,where, updateDoc} from 'firebase/firestore';
 import * as Location from 'expo-location';
-const UserProfile = () => {
+const UserProfile = ({route}) => {
+
+  const lat=route.params;
+  const long=route.params;
 
   const [location, setLocation] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -68,6 +71,7 @@ function updateLocation(){
   updateDoc(doc(database, "Users", currentmail.split('@')[0]), {
     busno:value
   })
+ 
 
 }
 console.log(value,'--<');
@@ -113,7 +117,7 @@ console.log(value,'--<');
 
         <View style={{  borderBottomColor: 'grey', borderBottomWidth: StyleSheet.hairlineWidth}}/>
 
-        <Text style={{fontSize:20,fontWeight:"bold",margin:10}}>Choose your Bus Id</Text>
+        {/* <Text style={{fontSize:20,fontWeight:"bold",margin:10}}>Choose your Bus Id</Text>
 
         <DropDownPicker
             listMode="SCROLLVIEW"
@@ -130,7 +134,7 @@ console.log(value,'--<');
 
     <TouchableOpacity style={styles.button} onPress={updateLocation}>
         <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}>Confirm</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
        
 

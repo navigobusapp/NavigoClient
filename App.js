@@ -16,6 +16,7 @@ import BookedTicket from "./screens/BookedTicket";
 import BusRoute from "./screens/BusRoute";
 import colors from "./colors";
 import ConcessionPage from "./screens/ConcessionPage";
+import BusHistory from "./screens/BusHistory.js";
 
 
 
@@ -48,6 +49,10 @@ function ChatStack() {
       <Tab.Screen name="Home" component={Home}  options={{ tabBarIcon:({size,color})=>(
             <FontAwesome name="home" size={25} color={colors.primary} />
           ),}} />
+
+<Tab.Screen name="BusHistory" component={BusHistory} options={{ tabBarIcon:({size,color})=>(
+            <FontAwesome name="bus" size={25} color={colors.primary} />
+          ),}} /> 
       <Tab.Screen name="UserProfile" component={UserProfile} options={{ tabBarIcon:({size,color})=>(
             <FontAwesome name="user" size={25} color={colors.primary} />
           ),}} />

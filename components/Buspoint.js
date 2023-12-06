@@ -21,7 +21,7 @@ const Buspoint = ({lat,long,busname,busno,Drivername,seatscount}) => {
           style={{shadowColor: 'black',
           shadowOpacity: 5,
           shadowRadius: 5,}}
-          onCalloutPress={()=>navigation.navigate("BusRoute",{seat:seatscount})}
+          //onCalloutPress={()=>navigation.navigate("BusRoute",{seat:seatscount})}
 
           
           >
