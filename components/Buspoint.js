@@ -1,4 +1,4 @@
-import { View, TextInput, Modal, FlatList, TouchableOpacity, Text ,StyleSheet,Pressable,Dimensions,Button,Image} from 'react-native';
+import { View, TextInput, Modal, FlatList, TouchableOpacity, Text ,StyleSheet,Pressable,Dimensions,Button,Image,Linking} from 'react-native';
 import React, {  useEffect, useState, useLayoutEffect} from "react";
 import { useNavigation } from "@react-navigation/native";
 //import MapView, { Marker, Circle } from "react-native-maps";
@@ -9,7 +9,7 @@ import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import {collection,orderBy,query,onSnapshot,} from "firebase/firestore";
 import { auth, database } from "../config/firebase";
 
-const Buspoint = ({lat,long,busname,busno,Drivername,seatscount}) => {
+const Buspoint = ({lat,long,busname,busno,Drivername,seatscount,mobile}) => {
     const navigation = useNavigation();
 
     return (
@@ -21,7 +21,7 @@ const Buspoint = ({lat,long,busname,busno,Drivername,seatscount}) => {
           style={{shadowColor: 'black',
           shadowOpacity: 5,
           shadowRadius: 5,}}
-          //onCalloutPress={()=>navigation.navigate("BusRoute",{seat:seatscount})}
+          onCalloutPress={()=>Linking.openURL(`tel:${mobile}`)}
 
           
           >

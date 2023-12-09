@@ -78,7 +78,8 @@ useLayoutEffect(() => {
         busname:doc.data().route,
         busno:doc.id, 
         drivername:doc.data().Drivername,
-        seatcount:doc.data().seatcount
+        seatcount:doc.data().seatcount,
+        mobile:doc.data().mobile
       
       }))
     )
@@ -261,7 +262,7 @@ useLayoutEffect(() => {
             onPress={{}}>
 
            
-            <Buspoint lat={value.lattitude} long={value.longitude} busname={value.busname} busno={value.busno} Drivername={value.drivername} seatscount={value.seatcount}/>
+            <Buspoint lat={value.lattitude} long={value.longitude} busname={value.busname} busno={value.busno} Drivername={value.drivername} seatscount={value.seatcount} mobile={value.mobile}/>
           </TouchableOpacity>
         ))}
         {/* <Buspoint lat={12.789174481216788} long={80.22144865609789} busname={"Mandaveli"} busno={"99"} Drivername={"Chandru"}/> */}
@@ -292,13 +293,13 @@ useLayoutEffect(() => {
         :
 
         <View>
-        <TextInput
+        {/* <TextInput
       style={styles.input}
       placeholder="Search Bus"
       value={searchQuery}
       onChangeText={handleSearchQueryChange}
       onFocus={() => setDropdownVisible(true)}
-      /> 
+      />  */}
       </View> 
         
         

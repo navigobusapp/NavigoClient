@@ -3,13 +3,13 @@ import React, { useState,useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import MapView from 'react-native-maps';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { getAuth} from "firebase/auth";
+import { getAuth,signOut} from "firebase/auth";
 import { FontAwesome } from '@expo/vector-icons';
 import colors from '../colors';
 import { auth, database } from '../config/firebase'
-import { signOut } from 'firebase/auth';
 import {collection,addDoc,orderBy,query,onSnapshot,setDoc,doc,getDoc,where, updateDoc} from 'firebase/firestore';
 import * as Location from 'expo-location';
+
 const UserProfile = ({route}) => {
 
   const lat=route.params;
@@ -21,6 +21,7 @@ const UserProfile = ({route}) => {
 
   const navigation = useNavigation();
  const [modalVisible, setModalVisible] = useState(true);
+ //const currentmail=getAuth()?.currentUser.email;
   //const [modalVisible, setmodalVisible] = useState(false);
    
       const [open, setOpen] = useState(false);
@@ -89,7 +90,7 @@ console.log(value,'--<');
         <View style={{flexDirection:"row"}}>
         <Text style={{fontSize:20,fontWeight:"bold",alignSelf:"center",marginLeft:"35%"}}>UserProfile</Text>
         <TouchableOpacity onPress={onSignOut}>
-        <FontAwesome name="sign-out" size={25} color={colors.primary} style={{marginLeft:130}} />
+        <FontAwesome name="sign-out" size={25} color={colors.primary} style={{marginLeft:100}} />
 
         </TouchableOpacity>
         </View>
@@ -106,9 +107,9 @@ console.log(value,'--<');
           </View>
 
           <View style={{justifyContent:"center",marginLeft:35,marginBottom:10}}>
-            <Text style={{fontSize:25,fontWeight:"bold",marginBottom:5}}>UserName</Text>
-            <Text>+91 7550005350</Text>
-            <Text>{getAuth().currentUser.email}</Text>
+            <Text style={{fontSize:25,fontWeight:"bold",marginBottom:5}}>{currentmail.split("@")[0]}</Text>
+            {/* <Text>+91 7550005350</Text> */}
+            <Text>{currentmail}</Text>
           </View>
         </View>
 

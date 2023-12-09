@@ -32,9 +32,8 @@ function Signup(){
         },
     ]), []);
 
-    const [selectedId, setSelectedId] = useState();
-    
 
+    const [selectedId, setSelectedId] = useState();
     const onHandleSignup = () => {
         if (email !== '' && password !== '') {
 
@@ -48,9 +47,7 @@ function Signup(){
             
               });
 
-      createUserWithEmailAndPassword(auth, email, password)
-      
-
+            createUserWithEmailAndPassword(auth, email, password)
             .then(() => console.log('Signup success'))
             .catch((err) => Alert.alert("Login error", err.message));
         }
