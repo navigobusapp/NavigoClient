@@ -16,8 +16,14 @@ import BusCard from '../components/BusCard';
 
 const BusHistory = ({route}) => {
   const navigation = useNavigation();
+  const [search,setsearch]=useState('');
+  //const [item,setitem]=useState('');
 
   const [busdetails,setbusdetails]=useState([]);
+
+  const filteredData = busdetails.filter((item) =>
+  item.route.toLowerCase().includes(search.toLowerCase())
+);
 
   const collectionRef = collection(database, 'BusLocations');
     useLayoutEffect(() => {
@@ -49,9 +55,17 @@ const BusHistory = ({route}) => {
     return (
       <View style={styles.container}>
         <Text style={{fontSize:20,fontWeight:"bold"}}>Today's Buses </Text>
+
+        <TextInput
+      style={styles.input}
+      placeholder="Search Bus"
+      value={search}
+      onChangeText={setsearch}
+      // onFocus={() => setDropdownVisible(true)}
+      /> 
         <ScrollView>
         {
-      busdetails.map((value,key)=>   
+      filteredData.map((value,key)=>   
       
        {
         if(value.visible){
@@ -87,6 +101,19 @@ const BusHistory = ({route}) => {
     padding:20,
 
   },
+  input: {
+    //position:"relative",
+   marginTop:20,
+   backgroundColor: "#F6F7FB",
+   height: 50,
+   fontSize: 16,
+   borderRadius: 10,
+   padding: 12,
+   //width:"95%", 
+   borderWidth:0.5,
+   borderColor:'grey'
+   //alignSelf:"center"
+ },
 
 
 
